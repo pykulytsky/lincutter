@@ -3,6 +3,9 @@ import uuid
 
 from django.forms import model_to_dict
 
+import random
+import string
+
 
 class ModelDiffMixin(object):
     """
@@ -49,8 +52,7 @@ class ModelDiffMixin(object):
 
 class Link(models.Model, ModelDiffMixin):
     initial_link = models.URLField(verbose_name="Link to redirect")
-    truncated_link_uuid = models.UUIDField(default=uuid.uuid4(),
-                                           max_length=10,
+    truncated_link_uuid = models.CharField(max_length=10,
                                            unique=True,
                                            db_index=True,
                                            editable=False)
@@ -58,7 +60,13 @@ class Link(models.Model, ModelDiffMixin):
 
     @property
     def truncated_link(self):
-        return 'http://' + self.truncated_link_uuid
+        return 'http://localhost:8080/' + self.truncated_link_uuid
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        letters = string.ascii_letters
+        self.truncated_link_uuid = ''.join(random.choice(letters) for _ in range(10))
+        super().save()
 
     class Meta:
         verbose_name = "Link"

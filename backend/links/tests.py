@@ -4,7 +4,7 @@ import uuid
 import datetime
 
 
-class ModelChangedTest(TestCase):
+class ModelChangedTestCase(TestCase):
     def setUp(self) -> None:
         link = Link.objects.create(initial_link='http://google.com')
 
@@ -41,3 +41,9 @@ class ModelChangedTest(TestCase):
         link.save()
 
         self.assertEqual(len(link.changed_fields), 1)
+
+
+class LinkSerializerTestCase(TestCase):
+
+    def setUp(self) -> None:
+        link = Link.objects.create(initial_link='http://google.com')
