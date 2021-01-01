@@ -9,6 +9,7 @@
 <style>
 * {
   font-family: "Proxima Nova Lt", sans-serif;
+  color: white;
 }
 
 #app {

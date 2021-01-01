@@ -5,6 +5,7 @@
     >Put your link below</h1>
 
     <vs-input
+        v-model="link"
         shadow
         icon-after
         class="link__input"
@@ -22,19 +23,19 @@
       <vs-radio
           v-model="usageType"
           class="radio"
-          val="1"
+          val="60"
       >60 days(Free)
       </vs-radio>
       <vs-radio
           v-model="usageType"
           class="radio"
-          val="2"
+          val="360"
       >1 Year(0,99$)
       </vs-radio>
       <vs-radio
           v-model="usageType"
           class="radio"
-          val="3"
+          val="inf"
       >Forever(1,99$)
       </vs-radio>
     </div>
@@ -49,7 +50,7 @@
     <div
         v-if="useCustomLink"
         class="custom__link">
-      <p>Lorem ipsum dolor sit amet.</p>
+      <p>Input yout custom link: </p>
 
       <vs-input
           @keydown="checkInput"
@@ -60,19 +61,39 @@
         <template #icon>
           <>
         </template>
+        <template #message-warn>
+          Max length is 10
+        </template>
       </vs-input>
 
     </div>
 
     <vs-button
         class="submit__btn"
+        @click="createLink"
     >
       Get your truncated link
     </vs-button>
+
+    <vs-dialog
+      v-model="getLinkDialog"
+    >
+      <div class="link__dialog">
+        <p>Here is your link, use it</p>
+
+        <div class="link">
+          <b>{{ linkDialog.link }}</b>
+          <vs-button>
+            Copy
+          </vs-button>
+        </div>
+      </div>
+    </vs-dialog>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 
 export default {
   components: {
@@ -81,9 +102,15 @@ export default {
 
   data: () => {
     return {
-      usageType: 1,
+      usageType: 60,
+      link: '',
       useCustomLink: false,
-      customLink: 'http:/localhost:8080/'
+      customLink: 'http:/localhost:8080/',
+      getLinkDialog: false,
+
+      linkDialog: {
+        link: ''
+      }
     }
   },
   created() {
@@ -96,8 +123,43 @@ export default {
         return event.preventDefault();
       }
     },
+    createLink () {
+      if (this.customLink == 'http:/localhost:8080/') {
+        axios.post('http://localhost:8000/api/v1/link/',
+            {
+              initial_link: this.link,
+              days: this.usageType,
+            })
+        .then(response => {
+          this.getLinkDialog = true
+          this.linkDialog.link = 'http://localhost:8080/' + response.data.truncated_link_uuid
+        })
+        .catch(error => {
+
+        })
+      }
+      else {
+        axios.post('http://localhost:8000/api/v1/link/',
+            {
+              initial_link: this.link,
+              days: this.usageType,
+              truncated_link_uuid: this.customLink.slice(21)
+            })
+        .then(response => {
+          this.getLinkDialog = true
+          this.linkDialog.link = 'http://localhost:8080/' + response.data.truncated_link_uuid
+        })
+        .catch(error => {
+
+        })
+      }
+    },
+
 
   },
+
+  updated() {
+  }
 }
 </script>
 
@@ -170,6 +232,17 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
+}
+
+.link__dialog {
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 </style>

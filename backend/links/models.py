@@ -64,8 +64,9 @@ class Link(models.Model, ModelDiffMixin):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        letters = string.ascii_letters
-        self.truncated_link_uuid = ''.join(random.choice(letters) for _ in range(10))
+        if self.truncated_link_uuid is None:
+            letters = string.ascii_letters
+            self.truncated_link_uuid = ''.join(random.choice(letters) for _ in range(10))
         super().save()
 
     class Meta:

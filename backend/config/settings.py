@@ -26,7 +26,6 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -49,6 +48,11 @@ THIRD_PARTY_APPS = [
 PROJECT_APPS = [
     'links'
 ]
+
+ALLOWED_HOSTS = ['http://localhost:8080',
+                 'localhost:8000',
+                 'localhost']
+
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
